@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import javax.validation.constraints.Min;
 
+import org.embulk.compatibility.CompatibilityUtil;
 import org.embulk.util.config.Config;
 import org.embulk.util.config.ConfigDefault;
 import org.embulk.util.config.ConfigMapper;
@@ -141,9 +142,9 @@ public class SpeedometerFilterPlugin
             this.allocator = getBufferAllocator();
             this.delimiterLength = task.getDelimiter().length();
             this.recordPaddingSize = task.getRecordPaddingSize();
-            this.pageReader = Exec.getPageReader(schema);
+            this.pageReader = CompatibilityUtil.getPageReader(schema);
             this.timestampFormatters = newTimestampColumnFormatters(task, schema, task.getColumnOptions());
-            this.pageBuilder = Exec.getPageBuilder(allocator, schema, pageOutput);
+            this.pageBuilder = CompatibilityUtil.getPageBuilder(allocator, schema, pageOutput);
             this.controller.start(System.currentTimeMillis());
         }
 
@@ -242,13 +243,17 @@ public class SpeedometerFilterPlugin
                 }
             }
 
+            @SuppressWarnings("deprecation") // For the use of org.embulk.spi.time.Timestamp, pageReader.getTimestamp and pageBuilder.setTimestamp
             @Override
             public void timestampColumn(Column column) {
                 if (pageReader.isNull(column)) {
                     speedMonitor(column);
                     pageBuilder.setNull(column);
-                } else {
+                } else if (CompatibilityUtil.HAS_PAGE_BUILDER_TIMESTAMP_INSTANT) {
                     pageBuilder.setTimestamp(column, speedMonitor(column, pageReader.getTimestampInstant(column)));
+                } else {
+                    Instant instant = speedMonitor(column, pageReader.getTimestamp(column).getInstant());
+                    pageBuilder.setTimestamp(column, org.embulk.spi.time.Timestamp.ofInstant(instant));
                 }
             }
 
