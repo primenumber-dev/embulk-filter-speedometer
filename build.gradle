@@ -27,11 +27,14 @@ dependencies {
     compile "org.embulk:embulk-util-config:0.3.4"
     // https://dev.embulk.org/embulk-util-timestamp/
     compile "org.embulk:embulk-util-timestamp:0.2.2"
+    // Needed for the embulk v0.9.x fallback path (PageReader#getJson / PageBuilder#setJson)
+    compileOnly "org.msgpack:msgpack-core:0.7.1"
 
     testImplementation "org.embulk:embulk-api:0.10.43"
     testImplementation "org.embulk:embulk-spi:0.10.43"
     testImplementation "org.embulk:embulk-util-file:0.1.5"
     testImplementation "org.embulk:embulk-util-timestamp:0.2.2"
+    testImplementation "org.msgpack:msgpack-core:0.7.1"
     testImplementation "org.jmockit:jmockit:1.15"
     testImplementation "junit:junit:4.+"
 }
