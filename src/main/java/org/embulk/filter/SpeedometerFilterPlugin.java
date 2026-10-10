@@ -25,6 +25,7 @@ import org.embulk.spi.PageOutput;
 import org.embulk.spi.PageReader;
 import org.embulk.spi.Schema;
 import org.embulk.spi.json.JsonValue;
+import org.msgpack.value.Value;
 import org.embulk.spi.type.TimestampType;
 import org.embulk.spi.Exec;
 import org.embulk.util.timestamp.TimestampFormatter;
@@ -84,7 +85,7 @@ public class SpeedometerFilterPlugin
         String getDefaultDate();
     }
 
-    private interface TimestampColumnOption extends org.embulk.util.config.Task {
+    public interface TimestampColumnOption extends org.embulk.util.config.Task {
         @Config("timezone")
         @ConfigDefault("null")
         java.util.Optional<String> getTimeZoneId();
@@ -260,13 +261,16 @@ public class SpeedometerFilterPlugin
                 }
             }
 
+            @SuppressWarnings("deprecation") // For the use of org.msgpack.value.Value, pageReader.getJson and pageBuilder.setJson
             @Override
             public void jsonColumn(Column column) {
                 if (pageReader.isNull(column)) {
                     speedMonitor(column);
                     pageBuilder.setNull(column);
-                } else {
+                } else if (CompatibilityUtil.HAS_PAGE_READER_JSON_VALUE) {
                     pageBuilder.setJson(column, speedMonitor(column, pageReader.getJsonValue(column)));
+                } else {
+                    pageBuilder.setJson(column, speedMonitor(column, pageReader.getJson(column)));
                 }
             }
 
@@ -315,6 +319,14 @@ public class SpeedometerFilterPlugin
             }
 
             private JsonValue speedMonitor(Column column, JsonValue v) {
+                speedMonitorForDelimiter(column);
+                // NOTE: This may not be good for performance. But, I have no other idea.
+                String s = v.toJson();
+                controller.checkSpeedLimit(startRecordTime, s != null ? s.length() : 0);
+                return v;
+            }
+
+            private Value speedMonitor(Column column, Value v) {
                 speedMonitorForDelimiter(column);
                 // NOTE: This may not be good for performance. But, I have no other idea.
                 String s = v.toJson();

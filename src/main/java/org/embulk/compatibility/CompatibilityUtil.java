@@ -57,8 +57,18 @@ public class CompatibilityUtil {
         return true;
     }
 
+    private static boolean hasPageReaderJsonValue() {
+        try {
+            PageReader.class.getMethod("getJsonValue", Column.class);
+        } catch (NoSuchMethodException e) {
+            return false;
+        }
+        return true;
+    }
+
     public static final boolean HAS_EXEC_GET_PAGE_READER = hasExecGetPageReader();
     public static final boolean HAS_EXEC_GET_PAGE_BUILDER = hasExecGetPageBuilder();
     public static final boolean HAS_PAGE_BUILDER_TIMESTAMP_INSTANT = hasPageBuilderTimestampInstant();
+    public static final boolean HAS_PAGE_READER_JSON_VALUE = hasPageReaderJsonValue();
 
 }
