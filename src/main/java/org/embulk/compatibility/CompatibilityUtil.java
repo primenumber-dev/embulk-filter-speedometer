@@ -1,5 +1,7 @@
 package org.embulk.compatibility;
 
+import java.time.Instant;
+
 import org.embulk.spi.BufferAllocator;
 import org.embulk.spi.Column;
 import org.embulk.spi.Exec;
@@ -48,6 +50,7 @@ public class CompatibilityUtil {
     private static boolean hasPageBuilderTimestampInstant() {
         try {
             PageReader.class.getMethod("getTimestampInstant", Column.class);
+            PageBuilder.class.getMethod("setTimestamp", Column.class, Instant.class);
         } catch (NoSuchMethodException e) {
             return false;
         }

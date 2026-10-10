@@ -183,11 +183,14 @@ public class SpeedometerFilterPlugin
             for (Column column : schema.getColumns()) {
                 if (column.getType() instanceof TimestampType) {
                     final TimestampColumnOption columnOption = columnOptions.get(column.getName());
+                    final Optional<String> format = columnOption != null ? columnOption.getFormat() : Optional.empty();
+                    final Optional<String> timeZoneId = columnOption != null ? columnOption.getTimeZoneId() : Optional.empty();
+                    final Optional<String> date = columnOption != null ? columnOption.getDate() : Optional.empty();
 
                     formatters[i] = TimestampFormatter
-                        .builder(columnOption.getFormat().orElse(task.getDefaultTimestampFormat()), true)
-                        .setDefaultZoneFromString(columnOption.getTimeZoneId().orElse(task.getDefaultTimeZoneId()))
-                        .setDefaultDateFromString(columnOption.getDate().orElse(task.getDefaultDate()))
+                        .builder(format.orElse(task.getDefaultTimestampFormat()), true)
+                        .setDefaultZoneFromString(timeZoneId.orElse(task.getDefaultTimeZoneId()))
+                        .setDefaultDateFromString(date.orElse(task.getDefaultDate()))
                         .build();
                 }
                 i++;
