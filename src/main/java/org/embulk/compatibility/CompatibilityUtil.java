@@ -9,6 +9,7 @@ import org.embulk.spi.PageBuilder;
 import org.embulk.spi.PageOutput;
 import org.embulk.spi.PageReader;
 import org.embulk.spi.Schema;
+import org.embulk.spi.json.JsonValue;
 
 public class CompatibilityUtil {
     @SuppressWarnings("deprecation")
@@ -60,6 +61,7 @@ public class CompatibilityUtil {
     private static boolean hasPageReaderJsonValue() {
         try {
             PageReader.class.getMethod("getJsonValue", Column.class);
+            PageBuilder.class.getMethod("setJson", Column.class, JsonValue.class);
         } catch (NoSuchMethodException e) {
             return false;
         }
