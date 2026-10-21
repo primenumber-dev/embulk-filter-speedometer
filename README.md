@@ -109,7 +109,7 @@ $ ./gradlew -DenableIntegrationTest=true clean all
 
 ## Release
 
-Pushing a `v*` tag (e.g. `v0.4.0`) runs `.github/workflows/gem-push.yml`, which builds the gem and publishes it to the primenumber-dev GitHub Packages registry. Bump `version` in `build.gradle` to match the tag before tagging.
+Pushing a `v*` tag (e.g. `v0.4.0`) runs `.github/workflows/gem-push.yml`, which builds the gem and publishes it to the primenumber-dev GitHub Packages registry. The gem version is derived from the tag (`v0.4.0` -> `0.4.0`), so there is no version to bump in `build.gradle`. An untagged checkout builds as `0.0.0.<sha>.pre`.
 
 ## Versions
 

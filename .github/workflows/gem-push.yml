@@ -15,6 +15,9 @@ jobs:
       contents: read
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # 4.3.1
+        with:
+          # build.gradle derives the version from the tag on HEAD
+          fetch-depth: 0
       - name: Set up Ruby 2.7
         uses: ruby/setup-ruby@7372622e62b60b3cb750dcd2b9e32c247ffec26a # 1.302.0
         with:

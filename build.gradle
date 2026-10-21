@@ -14,7 +14,30 @@ repositories {
     mavenCentral()
 }
 
-version = "0.4.0"
+// Version comes from the git tag on HEAD ("v0.4.0" or "0.4.0" -> "0.4.0"), like the other
+// primenumber-dev plugin repos. An untagged commit builds as "0.0.0.<sha>.pre" so it can
+// never be published over a real release by mistake.
+version = gitTagVersion()
+
+def gitTagVersion() {
+    def run = { List<String> cmd ->
+        def out = new ByteArrayOutputStream()
+        def result = exec {
+            commandLine cmd
+            standardOutput = out
+            errorOutput = new ByteArrayOutputStream()
+            ignoreExitValue = true
+        }
+        result.exitValue == 0 ? out.toString().trim() : null
+    }
+    def tag = run(["git", "describe", "--tags", "--exact-match", "HEAD"])
+    def m = tag == null ? null : (tag =~ /^v?(\d+\.\d+\.\d+(?:\.[A-Za-z0-9]+)*)$/)
+    if (m != null && m.matches()) {
+        return m.group(1)
+    }
+    def sha = run(["git", "rev-parse", "--short", "HEAD"]) ?: "unknown"
+    return "0.0.0.${sha}.pre"
+}
 
 dependencies {
     // https://mvnrepository.com/artifact/org.embulk/embulk-api
