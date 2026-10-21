@@ -107,9 +107,13 @@ Build with integrationTest
 $ ./gradlew -DenableIntegrationTest=true clean all
 ```
 
+## Release
+
+Pushing a `v*` tag (e.g. `v0.4.0`) runs `.github/workflows/gem-push.yml`, which builds the gem and publishes it to the primenumber-dev GitHub Packages registry. Bump `version` in `build.gradle` to match the tag before tagging.
+
 ## Versions
 
-This plugin version 0.4.0 or later can use with Embulk 0.11.
+This plugin version 0.4.0 or later can use with Embulk 0.9 and 0.11.
 
 
 ## Note

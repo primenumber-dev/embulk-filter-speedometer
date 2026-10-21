@@ -58,6 +58,11 @@ gemPush {
     host = "https://rubygems.org"
 }
 
+// Called by trocco-io/push-gem-to-gpr-action before "gem" (see .github/workflows/gem-push.yml).
+task printVersion {
+    doLast { println project.version }
+}
+
 // To use integrationTest, run like this:
 // ./gradlew -DenableIntegrationTest=true clean all
 
