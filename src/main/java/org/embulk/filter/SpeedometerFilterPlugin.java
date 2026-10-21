@@ -74,9 +74,10 @@ public class SpeedometerFilterPlugin
         @ConfigDefault("\"UTC\"")
         public String getDefaultTimeZoneId();
 
-        // copy from org.embulk.spi.time.TimestampParser.Task
+        // Matches org.embulk.spi.time.TimestampFormatter.Task on embulk v0.9, which plugin
+        // 0.3.x inherited. Keeps byte counts for unformatted timestamp columns unchanged.
         @Config("default_timestamp_format")
-        @ConfigDefault("\"%Y-%m-%d %H:%M:%S.%N %z\"")
+        @ConfigDefault("\"%Y-%m-%d %H:%M:%S.%6N %z\"")
         public String getDefaultTimestampFormat();
 
         // copy from org.embulk.spi.time.TimestampParser.Task
